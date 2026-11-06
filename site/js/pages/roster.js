@@ -7,7 +7,7 @@ export function renderRoster(ctx, st) {
   if (!weeks.length) return h('p', { class: 'note' }, 'No completed weeks in the selected range.');
   return h('div', {},
     h('p', { class: 'note', style: { margin: '10px 0 0' } }, `${weeksLabel(weeks)}. Based on starters’ points only; kickers and defenses count as players.`),
-    topHeavy(ctx, weeks), curves(ctx, weeks), dependency(ctx, weeks), positionMix(ctx, weeks), positionVsAvg(ctx, weeks));
+    positionMix(ctx, weeks), positionVsAvg(ctx, weeks), topHeavy(ctx, weeks), curves(ctx, weeks), dependency(ctx, weeks));
 }
 
 // ---- 1. Top-heavy share --------------------------------------------------------------------------------
