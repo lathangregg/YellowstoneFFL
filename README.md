@@ -39,7 +39,7 @@ node scripts/serve.mjs     # then open http://localhost:8080
 
 ## Automatic updates
 
-`.github/workflows/update.yml` runs **Tuesday and Wednesday at 14:00 UTC** (8–9 AM Central, after Monday Night Football and stat corrections), on every push that touches the site or scripts, and on demand from the **Actions** tab ("Run workflow"). If the data changed, it commits `site/data/league.json`; if the checks fail, nothing is deployed and the previous site stays up.
+`.github/workflows/update.yml` runs at **11:50 PM Central on Sunday, Monday and Thursday nights** (05:50 UTC the next day), on every push that touches the site or scripts, and on demand from the **Actions** tab ("Run workflow"). If the data changed, it commits `site/data/league.json`; if the checks fail, nothing is deployed and the previous site stays up.
 
 A week only counts as *completed* once Sleeper's current NFL week has moved past it and every team has a score. The in-progress week appears on Home as live scores but is excluded from all analysis.
 

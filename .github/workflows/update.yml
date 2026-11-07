@@ -2,8 +2,8 @@ name: Update data and deploy
 
 on:
   schedule:
-    # Tuesday and Wednesday, 14:00 UTC (8-9 AM Central): after Monday Night Football and stat corrections.
-    - cron: '0 14 * * 2,3'
+    # 11:50 PM Central (05:50 UTC next day, i.e. CST) on Sunday, Monday and Thursday nights.
+    - cron: '50 5 * * 1,2,5'
   workflow_dispatch: {}   # "Run workflow" button for a manual refresh
   push:
     branches: [main]
