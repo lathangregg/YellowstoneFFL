@@ -26,7 +26,7 @@ export function prepare(data) {
   }
   return {
     data, teams, byRid, rids: teams.map(t => t.rosterId), completed, score, opp, starters, matchupOf,
-    players: data.players, meRid: data.me ? data.me.rosterId : null,
+    players: data.players, meRid: null,
     name: rid => byRid[rid].name,
   };
 }
