@@ -49,20 +49,20 @@ function route(keepScroll = false) {
   if (keepScroll) window.scrollTo(0, y); else window.scrollTo(0, 0);
 }
 
-// "My team" highlight: chosen per viewer and remembered on this device only.
+// "My team" highlight: chosen per viewer and remembered on this device only (by roster ID).
 function setupMePicker(data) {
-  const key = 'ffl-me-' + data.league.id;
+  const key = 'ffl-me-roster-' + data.league.id;
   let saved = null;
-  try { saved = localStorage.getItem(key); } catch {}
-  const pick = ctx.teams.find(t => t.userId === saved);
+  try { saved = localStorage.getItem(key); localStorage.removeItem('ffl-me-' + data.league.id); } catch {}
+  const pick = ctx.teams.find(t => String(t.rosterId) === saved);
   ctx.meRid = pick ? pick.rosterId : null;
   const sel = document.getElementById('me-select');
   sel.replaceChildren(h('option', { value: '' }, 'No highlight'),
-    ...ctx.teams.map(t => h('option', { value: t.userId, selected: pick && t.userId === pick.userId ? true : null }, t.name)));
+    ...ctx.teams.map(t => h('option', { value: t.rosterId, selected: pick && t.rosterId === pick.rosterId ? true : null }, t.name)));
   sel.onchange = () => {
-    const t = ctx.teams.find(x => x.userId === sel.value);
+    const t = ctx.teams.find(x => String(x.rosterId) === sel.value);
     ctx.meRid = t ? t.rosterId : null;
-    try { t ? localStorage.setItem(key, t.userId) : localStorage.removeItem(key); } catch {}
+    try { t ? localStorage.setItem(key, String(t.rosterId)) : localStorage.removeItem(key); } catch {}
     route(true);
   };
 }
