@@ -32,11 +32,12 @@ const regularEnd = Math.max(1, (league.settings?.playoff_week_start || 15) - 1);
 const lastWeekToFetch = Math.min(regularEnd, state.season_type === 'regular' ? state.week : regularEnd);
 const userById = Object.fromEntries(users.map(u => [u.user_id, u]));
 
+// Sleeper user IDs are deliberately left out of the published file: anyone can use one to look up
+// every other league that member is in. The site only needs the roster ID.
 const teams = rosters.map(r => {
   const u = userById[r.owner_id] || {};
   return {
     rosterId: r.roster_id,
-    userId: r.owner_id,
     name: u.display_name || `Team ${r.roster_id}`,
     teamName: u.metadata?.team_name || null,
     official: { w: r.settings.wins, l: r.settings.losses, t: r.settings.ties || 0 },
