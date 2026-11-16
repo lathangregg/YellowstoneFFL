@@ -41,13 +41,13 @@ export function renderHome(ctx) {
   // Results: last completed week (and the in-progress week when it has started).
   const entries = ctx.data.weeks.filter(w => w.matchups.some(m => m.teams.some(t => t.pts > 0)));
   const wsel = h('select', { onchange: e => { holder.replaceChildren(matchupList(ctx, entries.find(x => x.week === +e.target.value))); } },
-    entries.slice().reverse().map(e => h('option', { value: e.week }, `Week ${e.week}${e.complete ? '' : ' (in progress)'}`)));
+    entries.slice().reverse().map(e => h('option', { value: e.week }, `Week ${e.week}${e.complete || e.matchups.every(m => m.teams.length !== 2 || m.final) ? '' : ' (in progress)'}`)));
   const first = entries[entries.length - 1];
   const holder = h('div', {}, first ? matchupList(ctx, first) : h('p', { class: 'note' }, 'No games yet.'));
 
   return h('div', {},
     tiles,
     section('Standings', `Through Week ${last}. Tap a column to sort. “vs all” is your record against every other team’s schedule.`, table),
-    section('Results', 'Winner in bold. Scores for an in-progress week are live as of the last update.',
+    section('Results', 'Winner in bold. Scores for an in-progress week are live as of the last update; a game is final (winner in bold) once every starter on both teams has played.',
       h('div', { class: 'controls', style: { margin: '0 0 10px' } }, wsel), holder));
 }

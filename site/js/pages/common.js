@@ -16,7 +16,7 @@ export function matchupList(ctx, entry) {
   const teams = new Map(ctx.teams.map(t => [t.rosterId, t]));
   return h('div', { class: 'matchups' }, entry.matchups.filter(m => m.teams.length === 2).map(m => {
     const [a, b] = m.teams.slice().sort((x, y) => y.pts - x.pts);
-    const done = entry.complete;
+    const done = !!(entry.complete || m.final); // final once every starter on both teams has played
     const row = (t, win) => [
       h('span', { class: (win && done ? 'win ' : done ? 'lose ' : '') + (t.rid === ctx.meRid ? 'me' : '') }, teams.get(t.rid).name),
       h('span', { class: 'pts ' + (win && done ? 'win' : done ? 'lose' : '') }, f1(t.pts)),

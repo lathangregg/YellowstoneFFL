@@ -78,6 +78,41 @@ for (const id of seen) {
   };
 }
 
+// A game in the week still in progress is final once every starter on both teams has finished their
+// NFL game, from ESPN's public NFL scoreboard (Sleeper's API has no game status). Optional: if the
+// scoreboard can't be read, the game stays in progress until the week is over.
+const ESPN_ABBR = { WAS: 'WSH', JAC: 'JAX', LA: 'LAR' };
+const toEspn = t => (t ? ESPN_ABBR[t] || t : null);
+for (const wk of weeks) {
+  for (const m of wk.matchups) m.final = wk.complete;
+  if (wk.complete || !wk.matchups.some(m => m.teams.some(t => t.pts > 0))) continue;
+  let done = null;
+  try {
+    const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${league.season}&seasontype=2&week=${wk.week}`,
+      { headers: { accept: 'application/json', 'user-agent': 'yellowstone-ffl-site' } });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    const events = (await res.json()).events || [];
+    if (events.length) {
+      done = {};
+      for (const e of events) {
+        const fin = e.status?.type?.completed === true;
+        for (const c of e.competitions?.[0]?.competitors || []) if (c.team?.abbreviation) done[toEspn(c.team.abbreviation)] = fin;
+      }
+    }
+  } catch (e) {
+    console.error(`NFL scoreboard for week ${wk.week} not read (games stay in progress): ${e.message}`);
+  }
+  if (!done) continue;
+  // Team on a bye (not on the scoreboard) or player with no NFL team: nothing left to play.
+  const played = id => {
+    if (!players[id] || players[id].p === '?') return false; // unknown player: can't tell, keep it in progress
+    const t = toEspn(players[id].t);
+    return !t || done[t] !== false;
+  };
+  for (const m of wk.matchups) m.final = m.teams.length === 2 && m.teams.every(t => t.starters.every(s => played(s.id)));
+  console.log(`Week ${wk.week}: ${wk.matchups.filter(m => m.final).length}/${wk.matchups.length} games final`);
+}
+
 const out = {
   generatedAt: new Date().toISOString(),
   league: {
